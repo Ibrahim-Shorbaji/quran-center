@@ -3,6 +3,7 @@ import ProtectedRoute from './components/layout/ProtectedRoute'
 import LoginPage from './pages/auth/LoginPage'
 import DashboardPage from './pages/dashboard/DashboardPage'
 import AppLayout from './components/layout/AppLayout'
+import SheikhsPage from './pages/sheikhs/SheikhsPage'
 
 function App() {
   return (
@@ -21,7 +22,8 @@ function App() {
       >
         <Route index element={<Navigate to="/dashboard" replace />} />
         <Route path="dashboard" element={<DashboardPage />} />
-        {/* We will add more routes here as we build more pages */}
+        <Route path="sheikhs" element={<SheikhsPage />} />
+        {/* Add all future pages here */}
       </Route>
 
       {/* Any unknown URL → go to dashboard */}
