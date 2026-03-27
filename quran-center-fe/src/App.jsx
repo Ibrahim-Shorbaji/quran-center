@@ -4,14 +4,14 @@ import LoginPage from './pages/auth/LoginPage'
 import DashboardPage from './pages/dashboard/DashboardPage'
 import AppLayout from './components/layout/AppLayout'
 import SheikhsPage from './pages/sheikhs/SheikhsPage'
+import HalqasPage from './pages/halqas/HalqasPage'
+import StudentsPage from './pages/students/StudentsPage'
 
 function App() {
   return (
     <Routes>
-      {/* Public route */}
       <Route path="/login" element={<LoginPage />} />
 
-      {/* Protected routes — wrapped in AppLayout (sidebar + header) */}
       <Route
         path="/"
         element={
@@ -23,10 +23,10 @@ function App() {
         <Route index element={<Navigate to="/dashboard" replace />} />
         <Route path="dashboard" element={<DashboardPage />} />
         <Route path="sheikhs" element={<SheikhsPage />} />
-        {/* Add all future pages here */}
+        <Route path="halqas" element={<HalqasPage />} />
+        <Route path="students" element={<StudentsPage />} />
       </Route>
 
-      {/* Any unknown URL → go to dashboard */}
       <Route path="*" element={<Navigate to="/dashboard" replace />} />
     </Routes>
   )
