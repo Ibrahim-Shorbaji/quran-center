@@ -8,6 +8,7 @@ import {
     LogoutOutlined,
     MenuFoldOutlined,
     MenuUnfoldOutlined,
+    BookOutlined
 } from '@ant-design/icons'
 import { useAuth } from '../../store/authStore.jsx'
 import logo from '../../assets/logo.png'
@@ -37,6 +38,11 @@ const AppLayout = () => {
             icon: <UserOutlined />,
             label: 'Sheikhs',
         },
+        {
+            key: '/halqas',
+            icon: <BookOutlined />,
+            label: 'Halqas',
+        }
     ]
 
     const handleMenuClick = ({ key }) => {
