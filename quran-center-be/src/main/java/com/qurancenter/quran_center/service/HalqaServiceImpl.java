@@ -1,0 +1,98 @@
+package com.qurancenter.quran_center.service;
+
+import com.qurancenter.quran_center.dto.request.CreateHalqaRequest;
+import com.qurancenter.quran_center.dto.request.UpdateHalqaRequest;
+import com.qurancenter.quran_center.dto.response.HalqaResponse;
+import com.qurancenter.quran_center.entity.Halqa;
+import com.qurancenter.quran_center.entity.Sheikh;
+import com.qurancenter.quran_center.repository.HalqaRepository;
+import com.qurancenter.quran_center.repository.SheikhRepository;
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+@Service
+@RequiredArgsConstructor
+public class HalqaServiceImpl implements HalqaService {
+
+    private final HalqaRepository halqaRepository;
+    private final SheikhRepository sheikhRepository;
+
+    @Override
+    public List<HalqaResponse> getAllHalqas() {
+        return halqaRepository.findAll()
+                .stream()
+                .map(this::mapToResponse)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public HalqaResponse getHalqaById(Long id) {
+        Halqa halqa = halqaRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Halqa not found with id: " + id));
+        return mapToResponse(halqa);
+    }
+
+    @Override
+    @Transactional
+    public HalqaResponse createHalqa(CreateHalqaRequest request) {
+        Sheikh sheikh = sheikhRepository.findById(request.getSheikhId())
+                .orElseThrow(() -> new RuntimeException("Sheikh not found with id: " + request.getSheikhId()));
+
+        Halqa halqa = Halqa.builder()
+                .name(request.getName())
+                .schedule(request.getSchedule())
+                .maxStudents(request.getMaxStudents())
+                .sheikh(sheikh)
+                .active(true)
+                .build();
+
+        halqaRepository.save(halqa);
+        return mapToResponse(halqa);
+    }
+
+    @Override
+    @Transactional
+    public HalqaResponse updateHalqa(Long id, UpdateHalqaRequest request) {
+        Halqa halqa = halqaRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Halqa not found with id: " + id));
+
+        if (request.getName() != null) halqa.setName(request.getName());
+        if (request.getSchedule() != null) halqa.setSchedule(request.getSchedule());
+        if (request.getMaxStudents() != null) halqa.setMaxStudents(request.getMaxStudents());
+        if (request.getSheikhId() != null) {
+            Sheikh sheikh = sheikhRepository.findById(request.getSheikhId())
+                    .orElseThrow(() -> new RuntimeException("Sheikh not found with id: " + request.getSheikhId()));
+            halqa.setSheikh(sheikh);
+        }
+
+        halqaRepository.save(halqa);
+        return mapToResponse(halqa);
+    }
+
+    @Override
+    @Transactional
+    public void deleteHalqa(Long id) {
+        Halqa halqa = halqaRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Halqa not found with id: " + id));
+        halqaRepository.delete(halqa);
+    }
+
+    // ── Helper ─────────────────────────────────────────────────────────────
+    private HalqaResponse mapToResponse(Halqa halqa) {
+        return HalqaResponse.builder()
+                .id(halqa.getId())
+                .name(halqa.getName())
+                .schedule(halqa.getSchedule())
+                .maxStudents(halqa.getMaxStudents())
+                .currentStudents(halqa.getStudents() != null ? halqa.getStudents().size() : 0)
+                .sheikhId(halqa.getSheikh() != null ? halqa.getSheikh().getId() : null)
+                .sheikhName(halqa.getSheikh() != null ? halqa.getSheikh().getUser().getFullName() : null)
+                .active(halqa.isActive())
+                .createdAt(halqa.getCreatedAt())
+                .build();
+    }
+}

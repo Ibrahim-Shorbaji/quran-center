@@ -59,7 +59,7 @@ public class WebSecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.cors(cors -> cors.disable())  // ⬅️ ADD THIS to disable Spring Security CORS (WebConfig handles it)
+        http.cors(cors -> cors.configurationSource(corsConfigurationSource()))  // ⬅️ ADD THIS to disable Spring Security CORS (WebConfig handles it)
                 .csrf(csrf -> csrf.disable())
                 .exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
