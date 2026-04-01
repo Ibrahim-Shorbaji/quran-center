@@ -8,6 +8,8 @@ import com.qurancenter.quran_center.entity.Student;
 import com.qurancenter.quran_center.entity.User;
 import com.qurancenter.quran_center.enums.EnrollmentStatus;
 import com.qurancenter.quran_center.enums.Role;
+import com.qurancenter.quran_center.exception.BusinessException;
+import com.qurancenter.quran_center.exception.ResourceNotFoundException;
 import com.qurancenter.quran_center.repository.HalqaRepository;
 import com.qurancenter.quran_center.repository.StudentRepository;
 import com.qurancenter.quran_center.repository.UserRepository;
@@ -39,7 +41,7 @@ public class StudentServiceImpl implements StudentService {
     @Override
     public StudentResponse getStudentById(Long id) {
         Student student = studentRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Student not found with id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Student not found with id: " + id));
         return mapToResponse(student);
     }
 
@@ -47,7 +49,7 @@ public class StudentServiceImpl implements StudentService {
     @Transactional
     public StudentResponse createStudent(CreateStudentRequest request) {
         if (userRepository.existsByUsername(request.getUsername())) {
-            throw new RuntimeException("Username already exists: " + request.getUsername());
+            throw new BusinessException("Username already exists: " + request.getUsername());
         }
 
         // 1. Create User
@@ -65,7 +67,7 @@ public class StudentServiceImpl implements StudentService {
         Halqa halqa = null;
         if (request.getHalqaId() != null) {
             halqa = halqaRepository.findById(request.getHalqaId())
-                    .orElseThrow(() -> new RuntimeException("Halqa not found with id: " + request.getHalqaId()));
+                    .orElseThrow(() -> new ResourceNotFoundException("Halqa not found with id: " + request.getHalqaId()));
         }
 
         // 3. Create Student
@@ -90,7 +92,7 @@ public class StudentServiceImpl implements StudentService {
     @Transactional
     public StudentResponse updateStudent(Long id, UpdateStudentRequest request) {
         Student student = studentRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Student not found with id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Student not found with id: " + id));
 
         User user = student.getUser();
         if (request.getFullName() != null) user.setFullName(request.getFullName());
@@ -105,7 +107,7 @@ public class StudentServiceImpl implements StudentService {
         if (request.getEnrollmentStatus() != null) student.setEnrollmentStatus(request.getEnrollmentStatus());
         if (request.getHalqaId() != null) {
             Halqa halqa = halqaRepository.findById(request.getHalqaId())
-                    .orElseThrow(() -> new RuntimeException("Halqa not found with id: " + request.getHalqaId()));
+                    .orElseThrow(() -> new ResourceNotFoundException("Halqa not found with id: " + request.getHalqaId()));
             student.setHalqa(halqa);
         }
         studentRepository.save(student);
@@ -117,7 +119,7 @@ public class StudentServiceImpl implements StudentService {
     @Transactional
     public void deleteStudent(Long id) {
         Student student = studentRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Student not found with id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Student not found with id: " + id));
         studentRepository.delete(student);
     }
 
