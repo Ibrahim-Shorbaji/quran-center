@@ -47,7 +47,16 @@ const HalqaForm = ({ open, onClose, onSuccess, halqa }) => {
             form.resetFields()
             onSuccess()
         } catch (error) {
-            message.error(error.response?.data?.message || 'Something went wrong')
+            const data = error.response?.data
+            if (data?.fields) {
+                const fieldErrors = Object.entries(data.fields).map(([name, message]) => ({
+                    name,
+                    errors: [message]
+                }))
+                form.setFields(fieldErrors)
+            } else {
+                message.error(data?.message || 'Something went wrong')
+            }
         }
     }
 

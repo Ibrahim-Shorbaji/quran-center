@@ -6,6 +6,8 @@ import com.qurancenter.quran_center.dto.response.SheikhResponse;
 import com.qurancenter.quran_center.entity.Sheikh;
 import com.qurancenter.quran_center.entity.User;
 import com.qurancenter.quran_center.enums.Role;
+import com.qurancenter.quran_center.exception.BusinessException;
+import com.qurancenter.quran_center.exception.ResourceNotFoundException;
 import com.qurancenter.quran_center.repository.SheikhRepository;
 import com.qurancenter.quran_center.repository.UserRepository;
 import jakarta.transaction.Transactional;
@@ -35,7 +37,7 @@ public class SheikhServiceImpl implements SheikhService {
     @Override
     public SheikhResponse getSheikhById(Long id) {
         Sheikh sheikh = sheikhRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Sheikh not found with id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Sheikh not found with id: " + id));
         return mapToResponse(sheikh);
     }
 
@@ -44,7 +46,7 @@ public class SheikhServiceImpl implements SheikhService {
     public SheikhResponse createSheikh(CreateSheikhRequest request) {
         // 1. Check username not taken
         if (userRepository.existsByUsername(request.getUsername())) {
-            throw new RuntimeException("Username already exists: " + request.getUsername());
+            throw new BusinessException("Username already exists: " + request.getUsername());
         }
 
         // 2. Create User
@@ -72,7 +74,7 @@ public class SheikhServiceImpl implements SheikhService {
     @Transactional
     public SheikhResponse updateSheikh(Long id, UpdateSheikhRequest request) {
         Sheikh sheikh = sheikhRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Sheikh not found with id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Sheikh not found with id: " + id));
 
         User user = sheikh.getUser();
         if (request.getFullName() != null) user.setFullName(request.getFullName());
@@ -87,7 +89,7 @@ public class SheikhServiceImpl implements SheikhService {
     @Transactional
     public void deleteSheikh(Long id) {
         Sheikh sheikh = sheikhRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Sheikh not found with id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Sheikh not found with id: " + id));
         sheikhRepository.delete(sheikh);
     }
 

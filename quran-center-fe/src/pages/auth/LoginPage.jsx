@@ -33,7 +33,8 @@ const LoginPage = () => {
             navigate('/dashboard')
 
         } catch (err) {
-            setError('Invalid username or password. Please try again.')
+            const data = err.response?.data
+            setError(data?.message || 'Invalid username or password. Please try again.')
         } finally {
             setLoading(false)
         }
