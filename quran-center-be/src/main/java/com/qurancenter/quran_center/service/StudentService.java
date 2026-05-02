@@ -12,4 +12,6 @@ public interface StudentService {
     StudentResponse createStudent(CreateStudentRequest request);
     StudentResponse updateStudent(Long id, UpdateStudentRequest request);
     void deleteStudent(Long id);
+    List<StudentResponse> getStudentsByHalqa(Long halqaId);
+
 }
