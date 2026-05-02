@@ -2,6 +2,9 @@ package com.qurancenter.quran_center.service;
 
 import com.qurancenter.quran_center.dto.request.LoginRequest;
 import com.qurancenter.quran_center.dto.response.JwtResponse;
+import com.qurancenter.quran_center.entity.User;
+import com.qurancenter.quran_center.exception.ResourceNotFoundException;
+import com.qurancenter.quran_center.repository.UserRepository;
 import com.qurancenter.quran_center.security.jwt.JwtUtils;
 import com.qurancenter.quran_center.security.service.UserDetailsImpl;
 import com.qurancenter.quran_center.service.AuthService;
@@ -12,12 +15,16 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.util.Map;
+
 @Service
 @RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
 
     private final AuthenticationManager authenticationManager;
     private final JwtUtils jwtUtils;
+    private final UserRepository userRepository;
+
 
     @Override
     public JwtResponse login(LoginRequest loginRequest) {
@@ -52,4 +59,18 @@ public class AuthServiceImpl implements AuthService {
                 role
         );
     }
+
+    @Override
+    public Map<String, Object> getCurrentUser(String username) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+        return Map.of(
+                "id", user.getId(),
+                "username", user.getUsername(),
+                "fullName", user.getFullName(),
+                "role", user.getRole()
+        );
+    }
+
+
 }

@@ -8,7 +8,8 @@ import {
     LogoutOutlined,
     MenuFoldOutlined,
     MenuUnfoldOutlined,
-    BookOutlined
+    BookOutlined,
+    CalendarOutlined
 } from '@ant-design/icons'
 import { useAuth } from '../../store/authStore.jsx'
 import logo from '../../assets/logo.png'
@@ -22,28 +23,66 @@ const AppLayout = () => {
     const navigate = useNavigate()
     const location = useLocation()
 
-    const menuItems = [
-        {
-            key: '/dashboard',
-            icon: <DashboardOutlined />,
-            label: 'Dashboard',
-        },
-        {
-            key: '/students',
-            icon: <TeamOutlined />,
-            label: 'Students',
-        },
-        {
-            key: '/sheikhs',
-            icon: <UserOutlined />,
-            label: 'Sheikhs',
-        },
-        {
-            key: '/halqas',
-            icon: <BookOutlined />,
-            label: 'Halqas',
-        }
-    ]
+    const getMenuItems = () => {
+        const adminItems = [
+            {
+                key: '/dashboard',
+                icon: <DashboardOutlined />,
+                label: 'Dashboard',
+            },
+            {
+                key: '/sheikhs',
+                icon: <UserOutlined />,
+                label: 'Sheikhs',
+            },
+            {
+                key: '/halqas',
+                icon: <BookOutlined />,
+                label: 'Halqas',
+            },
+            {
+                key: '/students',
+                icon: <TeamOutlined />,
+                label: 'Students',
+            },
+            {
+                key: '/attendance',
+                icon: <CalendarOutlined />,
+                label: 'Attendance',
+            },
+        ]
+
+        const sheikhItems = [
+            {
+                key: '/dashboard',
+                icon: <DashboardOutlined />,
+                label: 'Dashboard',
+            },
+            {
+                key: '/halqas',
+                icon: <BookOutlined />,
+                label: 'My Halqas',
+            },
+            {
+                key: '/attendance',
+                icon: <CalendarOutlined />,
+                label: 'Attendance',
+            },
+        ]
+
+        const studentItems = [
+            {
+                key: '/my-profile',
+                icon: <UserOutlined />,
+                label: 'My Profile',
+            },
+        ]
+
+        if (user?.role === 'ADMIN') return adminItems
+        if (user?.role === 'SHEIKH') return sheikhItems
+        if (user?.role === 'STUDENT') return studentItems
+        return []
+    }
 
     const handleMenuClick = ({ key }) => {
         navigate(key)
@@ -99,7 +138,7 @@ const AppLayout = () => {
                 <Menu
                     mode="inline"
                     selectedKeys={[location.pathname]}
-                    items={menuItems}
+                    items={getMenuItems()}
                     onClick={handleMenuClick}
                     style={{ border: 'none' }}
                 />

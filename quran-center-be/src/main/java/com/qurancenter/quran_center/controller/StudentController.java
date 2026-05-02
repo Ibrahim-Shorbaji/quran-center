@@ -45,4 +45,9 @@ public class StudentController {
         studentService.deleteStudent(id);
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping("/halqa/{halqaId}")
+    public ResponseEntity<List<StudentResponse>> getStudentsByHalqa(@PathVariable Long halqaId) {
+        return ResponseEntity.ok(studentService.getStudentsByHalqa(halqaId));
+    }
 }

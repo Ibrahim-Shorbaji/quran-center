@@ -123,6 +123,14 @@ public class StudentServiceImpl implements StudentService {
         studentRepository.delete(student);
     }
 
+    @Override
+    public List<StudentResponse> getStudentsByHalqa(Long halqaId) {
+        return studentRepository.findByHalqaId(halqaId)
+                .stream()
+                .map(this::mapToResponse)
+                .collect(Collectors.toList());
+    }
+
     // ── Helper ─────────────────────────────────────────────────────────────
     private StudentResponse mapToResponse(Student student) {
         return StudentResponse.builder()

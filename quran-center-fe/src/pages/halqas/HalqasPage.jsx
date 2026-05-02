@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { Table, Button, Space, Popconfirm, message, Tag } from 'antd'
 import { PlusOutlined, EditOutlined, DeleteOutlined, TeamOutlined } from '@ant-design/icons'
 import { getAllHalqas, deleteHalqa } from '../../api/halqaApi'
@@ -9,6 +10,7 @@ const HalqasPage = () => {
     const [loading, setLoading] = useState(false)
     const [modalOpen, setModalOpen] = useState(false)
     const [selectedHalqa, setSelectedHalqa] = useState(null)
+    const navigate = useNavigate()
 
     const fetchHalqas = async () => {
         setLoading(true)
@@ -55,7 +57,15 @@ const HalqasPage = () => {
             title: 'Halqa Name',
             dataIndex: 'name',
             key: 'name',
-            render: (name) => <strong>{name}</strong>
+            render: (name, record) => (
+                <a
+
+                    onClick={() => navigate(`/halqas/${record.id}`)}
+                    style={{ fontWeight: 'bold', cursor: 'pointer' }}
+                >
+                    {name}
+                </a>
+            )
         },
         {
             title: 'Sheikh',
