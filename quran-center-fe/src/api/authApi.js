@@ -5,3 +5,5 @@ export const loginApi = (credentials) => {
 }
 
 export const getCurrentUser = () => axiosInstance.get('/auth/me')
+
+export const getMyProfile = () => axiosInstance.get('/auth/my-profile')

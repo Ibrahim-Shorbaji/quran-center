@@ -28,4 +28,9 @@ public class AuthController {
         return ResponseEntity.ok(authService.getCurrentUser(authentication.getName()));
     }
 
+    @GetMapping("/my-profile")
+    public ResponseEntity<?> getMyProfile(Authentication authentication) {
+        return ResponseEntity.ok(authService.getMyProfile(authentication.getName()));
+    }
+
 }

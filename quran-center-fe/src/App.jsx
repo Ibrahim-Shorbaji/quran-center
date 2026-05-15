@@ -10,6 +10,7 @@ import StudentsPage from './pages/students/StudentsPage'
 import HalqaDetailPage from './pages/halqas/HalqaDetailPage'
 import StudentProfilePage from './pages/students/StudentProfilePage'
 import AttendancePage from './pages/attendance/AttendancePage'
+import StudentPortalPage from './pages/portal/StudentPortalPage'
 
 
 function App() {
@@ -55,7 +56,7 @@ function App() {
         {/* Student only — placeholder for now */}
         <Route path="/my-profile" element={
           <RoleProtectedRoute roles={['STUDENT']}>
-            <DashboardPage />
+            <StudentPortalPage />
           </RoleProtectedRoute>
         } />
 
