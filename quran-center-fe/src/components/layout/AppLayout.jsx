@@ -72,6 +72,11 @@ const AppLayout = () => {
 
         const studentItems = [
             {
+                key: '/dashboard',
+                icon: <DashboardOutlined />,
+                label: 'Dashboard',
+            },
+            {
                 key: '/my-profile',
                 icon: <UserOutlined />,
                 label: 'My Profile',

@@ -2,8 +2,12 @@ package com.qurancenter.quran_center.service;
 
 import com.qurancenter.quran_center.dto.request.LoginRequest;
 import com.qurancenter.quran_center.dto.response.JwtResponse;
+import com.qurancenter.quran_center.dto.response.StudentResponse;
+import com.qurancenter.quran_center.entity.Student;
 import com.qurancenter.quran_center.entity.User;
 import com.qurancenter.quran_center.exception.ResourceNotFoundException;
+import com.qurancenter.quran_center.repository.SheikhRepository;
+import com.qurancenter.quran_center.repository.StudentRepository;
 import com.qurancenter.quran_center.repository.UserRepository;
 import com.qurancenter.quran_center.security.jwt.JwtUtils;
 import com.qurancenter.quran_center.security.service.UserDetailsImpl;
@@ -24,6 +28,8 @@ public class AuthServiceImpl implements AuthService {
     private final AuthenticationManager authenticationManager;
     private final JwtUtils jwtUtils;
     private final UserRepository userRepository;
+    private final StudentRepository studentRepository;
+    private final SheikhRepository sheikhRepository;
 
 
     @Override
@@ -72,5 +78,31 @@ public class AuthServiceImpl implements AuthService {
         );
     }
 
+
+    @Override
+    public StudentResponse getMyProfile(String username) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+
+        Student student = studentRepository.findByUserId(user.getId())
+                .orElseThrow(() -> new ResourceNotFoundException("Student profile not found"));
+
+        return StudentResponse.builder()
+                .id(student.getId())
+                .userId(user.getId())
+                .fullName(user.getFullName())
+                .username(user.getUsername())
+                .phone(user.getPhone())
+                .age(student.getAge())
+                .dateOfBirth(student.getDateOfBirth())
+                .address(student.getAddress())
+                .guardianName(student.getGuardianName())
+                .guardianPhone(student.getGuardianPhone())
+                .enrollmentStatus(student.getEnrollmentStatus())
+                .halqaId(student.getHalqa() != null ? student.getHalqa().getId() : null)
+                .halqaName(student.getHalqa() != null ? student.getHalqa().getName() : null)
+                .createdAt(student.getCreatedAt())
+                .build();
+    }
 
 }
