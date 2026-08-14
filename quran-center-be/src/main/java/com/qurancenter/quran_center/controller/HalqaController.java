@@ -8,6 +8,8 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,8 +22,8 @@ public class HalqaController {
     private final HalqaService halqaService;
 
     @GetMapping
-    public ResponseEntity<List<HalqaResponse>> getAllHalqas() {
-        return ResponseEntity.ok(halqaService.getAllHalqas());
+    public ResponseEntity<List<HalqaResponse>> getHalqas(Authentication authentication) {
+        return ResponseEntity.ok(halqaService.getHalqasForUser(authentication.getName()));
     }
 
     @GetMapping("/{id}")
@@ -30,17 +32,20 @@ public class HalqaController {
     }
 
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<HalqaResponse> createHalqa(@Valid @RequestBody CreateHalqaRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(halqaService.createHalqa(request));
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<HalqaResponse> updateHalqa(@PathVariable Long id,
                                                      @RequestBody UpdateHalqaRequest request) {
         return ResponseEntity.ok(halqaService.updateHalqa(id, request));
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> deleteHalqa(@PathVariable Long id) {
         halqaService.deleteHalqa(id);
         return ResponseEntity.noContent().build();

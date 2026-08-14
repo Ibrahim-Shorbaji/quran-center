@@ -1,6 +1,6 @@
 import { Form, Input, Button, Alert } from 'antd'
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation, Navigate } from 'react-router-dom'
 import { useAuth } from '../../store/authStore.jsx'
 import { loginApi } from '../../api/authApi'
 import logo from '../../assets/logo.png'
@@ -8,8 +8,15 @@ import logo from '../../assets/logo.png'
 const LoginPage = () => {
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState(null)
-    const { login } = useAuth()
+    const { login, isAuthenticated } = useAuth()
     const navigate = useNavigate()
+    const location = useLocation()
+
+    // Where ProtectedRoute bounced them from, if anywhere
+    const from = location.state?.from?.pathname || '/dashboard'
+
+    // Already signed in → no reason to show the form
+    if (isAuthenticated) return <Navigate to={from} replace />
 
     const onFinish = async (values) => {
         setLoading(true)
@@ -21,7 +28,7 @@ const LoginPage = () => {
             })
             const { token, id, username, role } = response.data
             login({ id, username, role }, token)
-            navigate('/dashboard')
+            navigate(from, { replace: true })
         } catch (err) {
             const data = err.response?.data
             setError(data?.message || 'Invalid username or password. Please try again.')
@@ -91,8 +98,7 @@ const LoginPage = () => {
                             letterSpacing: '0.5px',
                             fontFamily: "'Georgia', serif",
                         }}>
-                            نور القرآن
-                        </div>
+                            الحافظ المتميز                        </div>
                         <div style={{
                             color: 'rgba(212, 175, 55, 0.6)',
                             fontSize: '10px',
@@ -138,7 +144,7 @@ const LoginPage = () => {
                         marginTop: '8px',
                         textTransform: 'uppercase',
                     }}>
-                        — SAHIH AL-BUKHARI, 5027
+                        صحيح  البخاري 5027
                     </div>
                 </div>
             </div>

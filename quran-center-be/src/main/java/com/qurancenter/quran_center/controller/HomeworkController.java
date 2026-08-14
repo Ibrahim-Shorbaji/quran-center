@@ -7,6 +7,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -25,6 +26,7 @@ public class HomeworkController {
     }
 
     @PostMapping
+    @PreAuthorize("hasAnyRole('ADMIN', 'SHEIKH')")
     public ResponseEntity<HomeworkResponse> createHomework(
             @Valid @RequestBody CreateHomeworkRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED)
@@ -32,11 +34,13 @@ public class HomeworkController {
     }
 
     @PatchMapping("/{id}/review")
+    @PreAuthorize("hasAnyRole('ADMIN', 'SHEIKH')")
     public ResponseEntity<HomeworkResponse> markAsReviewed(@PathVariable Long id) {
         return ResponseEntity.ok(homeworkService.markAsReviewed(id));
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'SHEIKH')")
     public ResponseEntity<Void> deleteHomework(@PathVariable Long id) {
         homeworkService.deleteHomework(id);
         return ResponseEntity.noContent().build();

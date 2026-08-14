@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { Table, Button, Space, Popconfirm, message, Tag } from 'antd'
 import { PlusOutlined, EditOutlined, DeleteOutlined, TeamOutlined } from '@ant-design/icons'
 import { getAllHalqas, deleteHalqa } from '../../api/halqaApi'
+import { useAuth } from '../../store/authStore.jsx'
 import HalqaForm from './HalqaForm'
 
 const HalqasPage = () => {
@@ -11,6 +12,8 @@ const HalqasPage = () => {
     const [modalOpen, setModalOpen] = useState(false)
     const [selectedHalqa, setSelectedHalqa] = useState(null)
     const navigate = useNavigate()
+    const { user } = useAuth()
+    const isSheikh = user?.role === 'SHEIKH'
 
     const fetchHalqas = async () => {
         setLoading(true)
@@ -98,7 +101,7 @@ const HalqasPage = () => {
                 </Tag>
             )
         },
-        {
+        ...(isSheikh ? [] : [{
             title: 'Actions',
             key: 'actions',
             render: (_, record) => (
@@ -125,7 +128,7 @@ const HalqasPage = () => {
                     </Popconfirm>
                 </Space>
             ),
-        },
+        }]),
     ]
 
     return (
@@ -138,11 +141,15 @@ const HalqasPage = () => {
             }}>
                 <div>
                     <h2 style={{ margin: 0 }}>Halqas</h2>
-                    <p style={{ margin: 0, color: '#888' }}>Manage all Quran circles</p>
+                    <p style={{ margin: 0, color: '#888' }}>
+                        {isSheikh ? 'Your Quran circles' : 'Manage all Quran circles'}
+                    </p>
                 </div>
-                <Button type="primary" icon={<PlusOutlined />} onClick={handleAdd} size="large">
-                    Add Halqa
-                </Button>
+                {!isSheikh && (
+                    <Button type="primary" icon={<PlusOutlined />} onClick={handleAdd} size="large">
+                        Add Halqa
+                    </Button>
+                )}
             </div>
 
             <Table

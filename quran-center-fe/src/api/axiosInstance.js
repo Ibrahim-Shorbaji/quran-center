@@ -7,6 +7,13 @@ const axiosInstance = axios.create({
     },
 })
 
+// AuthProvider registers its logout here so an expired session clears React
+// state too — ProtectedRoute then sends the user to /login on its own.
+let onSessionExpired = null
+export const setSessionExpiredHandler = (handler) => {
+    onSessionExpired = handler
+}
+
 // Before every request → attach the token if it exists
 axiosInstance.interceptors.request.use(
     (config) => {
@@ -19,14 +26,18 @@ axiosInstance.interceptors.request.use(
     (error) => Promise.reject(error)
 )
 
-// If backend returns 401 → clear storage and go to login
+// Any 401 on an authenticated call means the session is gone → log out.
+// Login itself also answers 401 on bad credentials, so it is exempt —
+// otherwise a typo would wipe the page before the error could be shown.
 axiosInstance.interceptors.response.use(
     (response) => response,
     (error) => {
-        if (error.response?.status === 401) {
+        const isLoginRequest = error.config?.url?.includes('/auth/login')
+
+        if (error.response?.status === 401 && !isLoginRequest) {
             localStorage.removeItem('token')
             localStorage.removeItem('user')
-            window.location.href = '/login'
+            if (onSessionExpired) onSessionExpired()
         }
         return Promise.reject(error)
     }

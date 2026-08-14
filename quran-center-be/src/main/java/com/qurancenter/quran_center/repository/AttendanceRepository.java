@@ -13,4 +13,6 @@ public interface AttendanceRepository extends JpaRepository<Attendance, Long> {
     List<Attendance> findByStudentIdOrderBySessionDateDesc(Long studentId);
     List<Attendance> findBySheikhIdAndSessionDate(Long sheikhId, LocalDate date);
     Optional<Attendance> findByStudentIdAndSessionDate(Long studentId, LocalDate sessionDate);
+    List<Attendance> findBySessionDateBetween(LocalDate from, LocalDate to);
+    List<Attendance> findBySheikhIdAndSessionDateBetween(Long sheikhId, LocalDate from, LocalDate to);
 }
