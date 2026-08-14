@@ -8,6 +8,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -30,17 +31,20 @@ public class SheikhController {
     }
 
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<SheikhResponse> createSheikh(@Valid @RequestBody CreateSheikhRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(sheikhService.createSheikh(request));
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<SheikhResponse> updateSheikh(@PathVariable Long id,
                                                        @RequestBody UpdateSheikhRequest request) {
         return ResponseEntity.ok(sheikhService.updateSheikh(id, request));
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> deleteSheikh(@PathVariable Long id) {
         sheikhService.deleteSheikh(id);
         return ResponseEntity.noContent().build();

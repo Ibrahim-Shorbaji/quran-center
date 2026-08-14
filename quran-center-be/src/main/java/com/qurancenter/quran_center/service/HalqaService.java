@@ -7,7 +7,10 @@ import com.qurancenter.quran_center.dto.response.HalqaResponse;
 import java.util.List;
 
 public interface HalqaService {
-    List<HalqaResponse> getAllHalqas();
+    /**
+     * Admins see every halqa; a sheikh sees only the halqas they teach.
+     */
+    List<HalqaResponse> getHalqasForUser(String username);
     HalqaResponse getHalqaById(Long id);
     HalqaResponse createHalqa(CreateHalqaRequest request);
     HalqaResponse updateHalqa(Long id, UpdateHalqaRequest request);

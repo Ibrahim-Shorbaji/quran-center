@@ -7,6 +7,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -36,6 +37,7 @@ public class TasmeeReportController {
     }
 
     @PostMapping
+    @PreAuthorize("hasAnyRole('ADMIN', 'SHEIKH')")
     public ResponseEntity<TasmeeReportResponse> createReport(
             @Valid @RequestBody CreateTasmeeReportRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED)
@@ -43,6 +45,7 @@ public class TasmeeReportController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'SHEIKH')")
     public ResponseEntity<Void> deleteReport(@PathVariable Long id) {
         tasmeeReportService.deleteReport(id);
         return ResponseEntity.noContent().build();

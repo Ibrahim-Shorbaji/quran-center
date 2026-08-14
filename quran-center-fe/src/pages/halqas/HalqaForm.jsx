@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Modal, Form, Input, InputNumber, Select, Button, message } from 'antd'
 import { createHalqa, updateHalqa } from '../../api/halqaApi'
 import { getAllSheikhs } from '../../api/sheikhApi'
+import { DAY_OPTIONS, TIME_OPTIONS, buildSchedule, parseSchedule } from '../../constants/halqaSchedule'
 
 const HalqaForm = ({ open, onClose, onSuccess, halqa }) => {
     const [form] = Form.useForm()
@@ -24,9 +25,11 @@ const HalqaForm = ({ open, onClose, onSuccess, halqa }) => {
     // Fill form when editing
     useEffect(() => {
         if (halqa) {
+            const { days, time } = parseSchedule(halqa.schedule)
             form.setFieldsValue({
                 name: halqa.name,
-                schedule: halqa.schedule,
+                scheduleDays: days,
+                scheduleTime: time,
                 maxStudents: halqa.maxStudents,
                 sheikhId: halqa.sheikhId,
             })
@@ -35,13 +38,14 @@ const HalqaForm = ({ open, onClose, onSuccess, halqa }) => {
         }
     }, [halqa, form])
 
-    const onFinish = async (values) => {
+    const onFinish = async ({ scheduleDays, scheduleTime, ...values }) => {
+        const payload = { ...values, schedule: buildSchedule(scheduleDays, scheduleTime) }
         try {
             if (isEdit) {
-                await updateHalqa(halqa.id, values)
+                await updateHalqa(halqa.id, payload)
                 message.success('Halqa updated successfully')
             } else {
-                await createHalqa(values)
+                await createHalqa(payload)
                 message.success('Halqa created successfully')
             }
             form.resetFields()
@@ -50,7 +54,8 @@ const HalqaForm = ({ open, onClose, onSuccess, halqa }) => {
             const data = error.response?.data
             if (data?.fields) {
                 const fieldErrors = Object.entries(data.fields).map(([name, message]) => ({
-                    name,
+                    // the schedule string is built from two form fields
+                    name: name === 'schedule' ? 'scheduleDays' : name,
                     errors: [message]
                 }))
                 form.setFields(fieldErrors)
@@ -91,8 +96,22 @@ const HalqaForm = ({ open, onClose, onSuccess, halqa }) => {
                     />
                 </Form.Item>
 
-                <Form.Item label="Schedule" name="schedule">
-                    <Input placeholder="e.g. Sat, Mon, Wed - 8:00 AM" />
+                <Form.Item label="Days" name="scheduleDays">
+                    <Select
+                        mode="multiple"
+                        allowClear
+                        placeholder="Select days"
+                        options={DAY_OPTIONS}
+                    />
+                </Form.Item>
+
+                <Form.Item label="Time" name="scheduleTime">
+                    <Select
+                        allowClear
+                        showSearch
+                        placeholder="Select a time"
+                        options={TIME_OPTIONS}
+                    />
                 </Form.Item>
 
                 <Form.Item label="Max Students" name="maxStudents">

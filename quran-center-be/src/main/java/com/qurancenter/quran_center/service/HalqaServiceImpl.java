@@ -5,9 +5,12 @@ import com.qurancenter.quran_center.dto.request.UpdateHalqaRequest;
 import com.qurancenter.quran_center.dto.response.HalqaResponse;
 import com.qurancenter.quran_center.entity.Halqa;
 import com.qurancenter.quran_center.entity.Sheikh;
+import com.qurancenter.quran_center.entity.User;
+import com.qurancenter.quran_center.enums.Role;
 import com.qurancenter.quran_center.exception.ResourceNotFoundException;
 import com.qurancenter.quran_center.repository.HalqaRepository;
 import com.qurancenter.quran_center.repository.SheikhRepository;
+import com.qurancenter.quran_center.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -21,11 +24,24 @@ public class HalqaServiceImpl implements HalqaService {
 
     private final HalqaRepository halqaRepository;
     private final SheikhRepository sheikhRepository;
+    private final UserRepository userRepository;
 
     @Override
-    public List<HalqaResponse> getAllHalqas() {
-        return halqaRepository.findAll()
-                .stream()
+    public List<HalqaResponse> getHalqasForUser(String username) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found: " + username));
+
+        List<Halqa> halqas;
+        if (user.getRole() == Role.SHEIKH) {
+            Sheikh sheikh = sheikhRepository.findByUserId(user.getId())
+                    .orElseThrow(() -> new ResourceNotFoundException(
+                            "Sheikh not found for user: " + username));
+            halqas = halqaRepository.findBySheikhId(sheikh.getId());
+        } else {
+            halqas = halqaRepository.findAll();
+        }
+
+        return halqas.stream()
                 .map(this::mapToResponse)
                 .collect(Collectors.toList());
     }

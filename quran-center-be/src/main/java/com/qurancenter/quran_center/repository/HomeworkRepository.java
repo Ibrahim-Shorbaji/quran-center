@@ -12,4 +12,6 @@ public interface HomeworkRepository extends JpaRepository<Homework, Long> {
     List<Homework> findByStudentIdOrderByDueDateDesc(Long studentId);
     List<Homework> findByStudentIdAndStatusOrderByDueDateDesc(Long studentId, HomeworkStatus status);
     List<Homework> findBySheikhIdOrderByDueDateDesc(Long sheikhId);
+    long countBySheikhIdAndStatus(Long sheikhId, HomeworkStatus status);
+    long countByStudentIdAndStatus(Long studentId, HomeworkStatus status);
 }

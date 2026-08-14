@@ -6,6 +6,7 @@ import com.qurancenter.quran_center.service.AttendanceService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,6 +19,7 @@ public class AttendanceController {
     private final AttendanceService attendanceService;
 
     @PostMapping
+    @PreAuthorize("hasAnyRole('ADMIN', 'SHEIKH')")
     public ResponseEntity<List<AttendanceResponse>> recordAttendance(
             @Valid @RequestBody RecordAttendanceRequest request) {
         return ResponseEntity.ok(attendanceService.recordAttendance(request));
